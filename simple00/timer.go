@@ -1,9 +1,3 @@
-// Copyright 2013 Ardan Studios. All rights reserved.
-// Use of workManager source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
-// Package workmanager implements the WorkManager singleton. This manager
-// controls the starting, shutdown and processing of work.
 package main
 
 import (
@@ -74,7 +68,7 @@ func (workManager *workManager) GoRoutineworkTimer() {
 	wait := timerPeriod
 
 	for {
-		WriteStdoutf("wt", "grt", "Info : Wait To Run : Seconds[%.0f]", wait.Seconds())
+		WriteStdoutf("wt", "grt", "Info : Wait To Run Top: Seconds[%.0f]", wait.Seconds())
 
 		select {
 		case <-workManager.ShutdownChannel:
