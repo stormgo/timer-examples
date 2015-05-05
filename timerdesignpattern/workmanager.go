@@ -67,21 +67,21 @@ func Shutdown() error {
 
 // GoRoutineworkTimer perform the work on the defined interval.
 func (workManager *workManager) GoRoutineworkTimer() {
-	WriteStdout("WorkTimer", "workManager.GoRoutineworkTimer", "Started")
+	WriteStdout("wt", "grt", "Started")
 
 	wait := timerPeriod
 
 	for {
-		WriteStdoutf("WorkTimer", "workManager.GoRoutineworkTimer", "Info : Wait To Run : Seconds[%.0f]", wait.Seconds())
+		WriteStdoutf("wt", "grt", "Info : Wait To Run : Seconds[%.0f]", wait.Seconds())
 
 		select {
 		case <-workManager.ShutdownChannel:
-			WriteStdoutf("WorkTimer", "workManager.GoRoutineworkTimer", "Shutting Down")
+			WriteStdoutf("wt", "grt", "Shutting Down")
 			workManager.ShutdownChannel <- "Down"
 			return
 
 		case <-time.After(wait):
-			WriteStdoutf("WorkTimer", "workManager.GoRoutineworkTimer", "Woke Up")
+			WriteStdoutf("wt", "grt", "Woke Up")
 			break
 		}
 
@@ -103,18 +103,18 @@ func (workManager *workManager) GoRoutineworkTimer() {
 // PerformTheWork simulate some silly display work with silly sleep times.
 func (workManager *workManager) PerformTheWork() {
 	defer CatchPanic(nil, "workManager", "WorkManager.PerformTheWork")
-	WriteStdout("WorkTimer", "workManager.GoRoutineworkTimer", "Started")
+	WriteStdout("wt", "wrt", "Started")
 
 	// Perform work for 10 seconds
 	for count := 0; count < 40; count++ {
 		if atomic.CompareAndSwapInt32(&wm.Shutdown, 1, 1) == true {
-			WriteStdout("WorkTimer", "workManager.GoRoutineworkTimer", "Info : Request To Shutdown")
+			WriteStdout("wt", "grt", "Info : Request To Shutdown")
 			return
 		}
 
-		WriteStdoutf("WorkTimer", "workManager.GoRoutineworkTimer", "Processing Images For Station : %d", count)
+		WriteStdoutf("wt", "grt", "Processing Images For Station : %d", count)
 		time.Sleep(time.Millisecond * 250)
 	}
 
-	WriteStdout("WorkTimer", "WorkManager.GoRoutineworkTimer", "Completed")
+	WriteStdout("wt", "grt", "Completed")
 }
