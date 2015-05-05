@@ -20,3 +20,6 @@ bill@ardanstudios.com
 
 [GoingGo.net Post:]
 (http://www.goinggo.net/2013/09/timer-routines-and-graceful-shutdowns.html)
+
+[Github Repo]
+(https://github.com/goinggo/timerdesignpattern)
