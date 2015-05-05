@@ -11,58 +11,58 @@ const (
 	timerPeriod time.Duration = 5 * time.Second // Interval to wake up on.
 )
 
-// workManager is responsible for starting and shutting down the program.
-type workManager struct {
+// timeManager is responsible for starting and shutting down the program.
+type timeManager struct {
 	Shutdown        int32
 	ShutdownChannel chan string
 }
 
-var wm workManager // Reference to the singleton.
+var wm timeManager // Reference to the singleton.
 
 // Startup brings the manager to a running state.
 func Startup() error {
 	var err error
-	defer CatchPanic(&err, "main", "workmanager.Startup")
+	defer CatchPanic(&err, "main", "timeManager.Startup")
 
-	WriteStdout("main", "workmanager.Startup", "Started")
+	WriteStdout("main", "timeManager.Startup", "Started")
 
 	// Create the work manager to get the program going
-	wm = workManager{
+	wm = timeManager{
 		Shutdown:        0,
 		ShutdownChannel: make(chan string),
 	}
 
 	// Start the work timer routine.
-	// When workManager returns the program terminates.
+	// When timeManager returns the program terminates.
 	go wm.GoRoutineworkTimer()
 
-	WriteStdout("main", "workmanager.Startup", "Completed")
+	WriteStdout("main", "timeManager.Startup", "Completed")
 	return err
 }
 
 // Shutdown brings down the manager gracefully.
 func Shutdown() error {
 	var err error
-	defer CatchPanic(&err, "main", "workmanager.Shutdown")
+	defer CatchPanic(&err, "main", "timeManager.Shutdown")
 
-	WriteStdout("main", "workmanager.Shutdown", "Started")
+	WriteStdout("main", "timeManager.Shutdown", "Started")
 
 	// Shutdown the program
-	WriteStdout("main", "workmanager.Shutdown", "Info : Shutting Down")
+	WriteStdout("main", "timeManager.Shutdown", "Info : Shutting Down")
 	atomic.CompareAndSwapInt32(&wm.Shutdown, 0, 1)
 
-	WriteStdout("main", "workmanager.Shutdown", "Info : Shutting Down Work Timer")
+	WriteStdout("main", "timeManager.Shutdown", "Info : Shutting Down Work Timer")
 	wm.ShutdownChannel <- "Down"
 	<-wm.ShutdownChannel
 
 	close(wm.ShutdownChannel)
 
-	WriteStdout("main", "workmanager.Shutdown", "Completed")
+	WriteStdout("main", "timeManager.Shutdown", "Completed")
 	return err
 }
 
 // GoRoutineworkTimer perform the work on the defined interval.
-func (workManager *workManager) GoRoutineworkTimer() {
+func (timeManager *timeManager) GoRoutineworkTimer() {
 	WriteStdout("wt", "grt", "Started")
 
 	wait := timerPeriod
@@ -71,9 +71,9 @@ func (workManager *workManager) GoRoutineworkTimer() {
 		WriteStdoutf("wt", "grt", "Info : Wait To Run Top: Seconds[%.0f]", wait.Seconds())
 
 		select {
-		case <-workManager.ShutdownChannel:
+		case <-timeManager.ShutdownChannel:
 			WriteStdoutf("wt", "grt", "Shutting Down")
-			workManager.ShutdownChannel <- "Down"
+			timeManager.ShutdownChannel <- "Down"
 			return
 
 		case <-time.After(wait):
@@ -82,14 +82,14 @@ func (workManager *workManager) GoRoutineworkTimer() {
 		}
 
 		// Perform the work
-		workManager.PerformTheWork()
+		timeManager.PerformTheWork()
 		wait = 3 * time.Second
 	}
 }
 
 // PerformTheWork simulate some silly display work with silly sleep times.
-func (workManager *workManager) PerformTheWork() {
-	defer CatchPanic(nil, "workManager", "WorkManager.PerformTheWork")
+func (timeManager *timeManager) PerformTheWork() {
+	defer CatchPanic(nil, "timeManager", "timeManager.PerformTheWork")
 	WriteStdout("wt", "wrt", "Started")
 
 	// Perform work for 4 seconds
