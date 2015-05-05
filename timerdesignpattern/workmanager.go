@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	timerPeriod time.Duration = 15 * time.Second // Interval to wake up on.
+	timerPeriod time.Duration = 5 * time.Second // Interval to wake up on.
 )
 
 // workManager is responsible for starting and shutting down the program.
@@ -85,18 +85,9 @@ func (workManager *workManager) GoRoutineworkTimer() {
 			break
 		}
 
-		// Mark the starting time
-		startTime := time.Now()
-
 		// Perform the work
 		workManager.PerformTheWork()
-
-		// Mark the ending time
-		endTime := time.Now()
-
-		// Caluclate the amount of time to wait to start workManager again.
-		duration := endTime.Sub(startTime)
-		wait = timerPeriod - duration
+		wait = 3 * time.Second
 	}
 }
 
@@ -105,15 +96,15 @@ func (workManager *workManager) PerformTheWork() {
 	defer CatchPanic(nil, "workManager", "WorkManager.PerformTheWork")
 	WriteStdout("wt", "wrt", "Started")
 
-	// Perform work for 10 seconds
-	for count := 0; count < 40; count++ {
+	// Perform work for 4 seconds
+	for count := 0; count < 8; count++ {
 		if atomic.CompareAndSwapInt32(&wm.Shutdown, 1, 1) == true {
 			WriteStdout("wt", "grt", "Info : Request To Shutdown")
 			return
 		}
 
-		WriteStdoutf("wt", "grt", "Processing Images For Station : %d", count)
-		time.Sleep(time.Millisecond * 250)
+		WriteStdoutf("wt", "grt", "Counter = : %d", count)
+		time.Sleep(time.Millisecond * 500)
 	}
 
 	WriteStdout("wt", "grt", "Completed")
